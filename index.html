@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#4cd68a">
+<script>
+/* Update bootstrap: if a newer version of this page was downloaded ("Update now"),
+   run that one instead of the built-in copy. Rolls back by itself if it fails to start. */
+(function () {
+  var BUILT_IN = Number("__APP_VERSION__");
+  if (isNaN(BUILT_IN)) return;
+  try {
+    var raw = localStorage.getItem("ota_bundle");
+    if (!raw) return;
+    var b = JSON.parse(raw);
+    if (!b || !b.html || !(Number(b.version) > BUILT_IN)) return;
+    if (localStorage.getItem("ota_pending") === String(b.version)) {
+      localStorage.removeItem("ota_bundle");
+      localStorage.removeItem("ota_pending");
+      return;
+    }
+    localStorage.setItem("ota_pending", String(b.version));
+    window.__OTA_SKIP = true;
+    document.documentElement.style.visibility = "hidden";
+    document.addEventListener("DOMContentLoaded", function () {
+      window.__OTA_SKIP = false;
+      document.open(); document.write(b.html); document.close();
+    });
+  } catch (e) {}
+})();
+</script>
+<title>My Tasks</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/views.css">
+<link rel="stylesheet" href="css/games.css">
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- Side menu -->
+  <aside class="drawer" id="drawer" aria-label="Main menu">
+    <div class="drawer-user" id="drawerUser"></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="drawer-foot">
+      <button class="nav-item" id="drawerLogout" type="button" hidden></button>
+      <div class="ver" id="drawerVer"></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="shell">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open menu"></button>
+      <div class="brand">
+        <h1 id="brandTitle">My Tasks</h1>
+        <p id="brandSub">Task Manager</p>
+      </div>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme"></button>
+      <button class="avatar-btn guest" id="profileBtn" type="button" aria-label="Profile"></button>
+    </header>
+    <main class="view" id="view"></main>
+  </div>
+</div>
+
+<!-- Task (add / edit) popup -->
+<div class="overlay" id="taskOverlay">
+  <div class="popup" role="dialog" aria-modal="true">
+    <button class="close-x" id="taskClose" type="button" aria-label="Close"></button>
+    <h3 id="taskTitle">New task</h3>
+    <p class="sub">Set a priority and an optional deadline.</p>
+    <form id="taskForm" novalidate>
+      <div class="field">
+        <label for="tText">Task</label>
+        <input id="tText" type="text" maxlength="120" placeholder="What do you need to do?" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Priority</label>
+        <div class="chips" id="prioChips">
+          <button type="button" data-p="low">Low</button>
+          <button type="button" data-p="med" class="active">Medium</button>
+          <button type="button" data-p="high">High</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="tDue">Due date &amp; time (optional)</label>
+        <input id="tDue" type="datetime-local">
+        <div class="chips quick" id="quickDue">
+          <button type="button" data-q="today">Today</button>
+          <button type="button" data-q="tomorrow">Tomorrow</button>
+          <button type="button" data-q="clear">Clear</button>
+        </div>
+      </div>
+      <div class="err" id="taskErr"></div>
+      <button class="btn primary block" id="taskSave" type="submit">Add task</button>
+    </form>
+  </div>
+</div>
+
+<!-- Auth popup -->
+<div class="overlay" id="authOverlay">
+  <div class="popup" role="dialog" aria-modal="true">
+    <button class="close-x" id="authClose" type="button" aria-label="Close"></button>
+    <h3 id="authTitle">Welcome back</h3>
+    <p class="sub" id="authSub">Sign in to add and save your data.</p>
+
+    <div class="tabs" id="authTabs">
+      <button data-mode="signin" class="active" type="button">Sign in</button>
+      <button data-mode="signup" type="button">Sign up</button>
+    </div>
+
+    <form id="authForm" novalidate>
+      <div class="field" id="nameField" style="display:none">
+        <label for="nameInput">Full name</label>
+        <input id="nameInput" type="text" placeholder="Your name" autocomplete="name">
+      </div>
+      <div class="field" id="nickField" style="display:none">
+        <label for="nickInput">Nickname <span class="opt-tag">shown in the title</span></label>
+        <input id="nickInput" type="text" maxlength="14" placeholder="e.g. Emon" autocomplete="nickname">
+      </div>
+      <div class="field">
+        <label for="emailInput">Email</label>
+        <input id="emailInput" type="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="passInput">Password</label>
+        <div class="input-wrap">
+          <input id="passInput" type="password" placeholder="At least 6 characters" autocomplete="current-password">
+          <button class="eye" id="eyeBtn" type="button" aria-label="Show password"></button>
+        </div>
+      </div>
+      <div class="err" id="authErr"></div>
+      <button class="btn primary block" id="authSubmit" type="submit">Sign in</button>
+    </form>
+
+    <div class="switch" id="authSwitch">
+      New here? <button type="button" id="switchBtn">Create an account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile popup -->
+<div class="overlay" id="profileOverlay">
+  <div class="popup" role="dialog" aria-modal="true">
+    <button class="close-x" id="profileClose" type="button" aria-label="Close"></button>
+
+    <div id="profileView">
+      <div class="profile-top">
+        <div class="avatar-wrap">
+          <div class="big-avatar" id="pAvatar">U</div>
+          <label class="cam" for="pPhotoInput" title="Upload photo" id="pCam"></label>
+          <input id="pPhotoInput" type="file" accept="image/*" hidden>
+        </div>
+        <h3 id="pName">Name</h3>
+        <p id="pEmail">email</p>
+        <button class="link-btn" id="pPhotoBtn" type="button">Upload profile photo</button>
+      </div>
+      <div class="info-list">
+        <div class="info-row"><span>Full name</span><span id="iName"></span></div>
+        <div class="info-row"><span>Nickname</span><span id="iNick"></span></div>
+        <div class="info-row"><span>Email</span><span id="iEmail"></span></div>
+        <div class="info-row"><span>Password</span><span>••••••••</span></div>
+        <div class="info-row"><span>Member since</span><span id="iSince"></span></div>
+        <div class="info-row"><span>App version</span><span id="iVer"></span></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="sTotal">0</b><small>Tasks</small></div>
+        <div class="stat"><b id="sDone">0</b><small>Done</small></div>
+        <div class="stat"><b id="sNotes">0</b><small>Notes</small></div>
+        <div class="stat red"><b id="sOverdue">0</b><small>Overdue</small></div>
+      </div>
+      <button class="btn primary block" id="editProfileBtn" type="button" style="margin-top:14px">Edit profile</button>
+      <button class="btn ghost block" id="checkUpdateBtn" type="button">Check for updates</button>
+      <button class="btn ghost danger block" id="logoutBtn" type="button">Log out</button>
+    </div>
+
+    <div id="profileEdit" style="display:none">
+      <h3>Edit profile</h3>
+      <p class="sub">Change your photo, name, nickname or password.</p>
+      <form id="profileForm" novalidate>
+        <div class="photo-row">
+          <div class="big-avatar" id="eAvatar">U</div>
+          <div class="photo-actions">
+            <label class="btn sm soft" for="photoInput">Upload photo</label>
+            <input id="photoInput" type="file" accept="image/*" hidden>
+            <button class="btn sm soft danger" id="removePhotoBtn" type="button">Remove photo</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="eName">Full name</label>
+          <input id="eName" type="text" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="eNick">Nickname <span class="opt-tag">shown in the title</span></label>
+          <input id="eNick" type="text" maxlength="14" autocomplete="nickname">
+        </div>
+        <div class="field">
+          <label for="eEmail">Email</label>
+          <input id="eEmail" type="email" disabled>
+        </div>
+        <div class="divider">Change password (optional)</div>
+        <div class="field">
+          <label for="ePassCur">Current password</label>
+          <input id="ePassCur" type="password" autocomplete="current-password">
+        </div>
+        <div class="field">
+          <label for="ePassNew">New password</label>
+          <input id="ePassNew" type="password" placeholder="At least 6 characters" autocomplete="new-password">
+        </div>
+        <div class="err" id="editErr"></div>
+        <button class="btn primary block" id="profileSave" type="submit">Save changes</button>
+        <button class="btn ghost block" id="editCancel" type="button">Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Update popup -->
+<div class="overlay" id="updateOverlay">
+  <div class="popup update-pop" role="dialog" aria-modal="true">
+    <div class="update-emoji">🚀</div>
+    <h3>Update available</h3>
+    <div class="update-ver" id="updateVer">Version</div>
+    <p class="sub" id="updateNotes">A new version of the app is ready.</p>
+    <div class="err" id="updateErr"></div>
+    <button class="btn primary block" id="updateNow" type="button">Update now</button>
+    <button class="btn ghost block" id="updateLater" type="button">Later</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="js/config.js"></script>
+<script src="js/core.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/notebook.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/games/hub.js"></script>
+<script src="js/games/util.js"></script>
+<script src="js/games/tictactoe.js"></script>
+<script src="js/games/snake.js"></script>
+<script src="js/games/memory.js"></script>
+<script src="js/games/guess.js"></script>
+<script src="js/games/flappy.js"></script>
+<script src="js/games/dino.js"></script>
+<script src="js/games/pong.js"></script>
+<script src="js/games/brick.js"></script>
+<script src="js/games/g2048.js"></script>
+<script src="js/cricket.js"></script>
+<script src="js/updater.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
