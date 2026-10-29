@@ -4,8 +4,8 @@ window.APP_CONFIG = {
   tagline: "Tasks, notes, games and cricket scoring in one app",
   developer: "Sunyeat Islam Emon",
   developerRole: "Software Engineer",
-  contactEmail: "your-email@example.com",   /* <- put your real email here */
-  contactPhone: "+880 1XXX-XXXXXX",         /* <- and your phone number */
+  contactEmail: "sunyeat.cse60@gmail.com",   /* <- put your real email here */
+  contactPhone: "+880 1571415210",         /* <- and your phone number */
   website: "https://example.com",           /* <- and your website */
   address: "Dhaka, Bangladesh"
 };
