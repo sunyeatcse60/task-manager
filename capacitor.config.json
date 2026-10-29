@@ -1,5 +1,5 @@
 {
-  "appId": "com.example.mytasks",
-  "appName": "My Tasks",
+  "appId": "com.sunyeat.taskora",
+  "appName": "Taskora",
   "webDir": "dist"
 }

@@ -17,33 +17,37 @@
     controls: "Type a number and press Enter.",
     type: "solo", difficulty: true, players: { min: 1, max: 4, def: 1 }, rounds: { min: 1, max: 5, def: 2 },
     mount: function (host, ctx) {
+      const levelInfo = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100);
+      const level = levelInfo.level;
       const L = LEVELS[ctx.difficulty] || LEVELS.medium;
-      const secret = 1 + U.rand(L.max);
-      let left = L.tries, over = false, doneTimer = null;
+      const levelMax = Math.max(L.max, L.max + (level - 1) * 12);
+      const secret = 1 + U.rand(levelMax);
+      let left = Math.max(3, L.tries - Math.floor((level - 1) / 6));
+      let over = false, doneTimer = null;
 
       host.innerHTML =
         '<div class="guess">' +
-        '<p class="guess-info">I am thinking of a number between <b>1</b> and <b>' + L.max + '</b>.<br>You have <b>' + L.tries + "</b> tries.</p>" +
+        '<p class="guess-info">Level <b>' + level + '</b> · I am thinking of a number between <b>1</b> and <b>' + levelMax + '</b>.<br>You have <b>' + left + "</b> tries.</p>" +
         '<div class="tries" id="gTries"></div>' +
-        '<form class="guess-form" id="gForm"><input id="gInput" type="number" inputmode="numeric" min="1" max="' + L.max + '" placeholder="Your guess" autocomplete="off"><button class="btn primary" type="submit">Guess</button></form>' +
+        '<form class="guess-form" id="gForm"><input id="gInput" type="number" inputmode="numeric" min="1" max="' + levelMax + '" placeholder="Your guess" autocomplete="off"><button class="btn primary" type="submit">Guess</button></form>' +
         '<div class="guess-msg" id="gMsg">Make your first guess!</div>' +
         '<ul class="guess-log" id="gLog"></ul></div>';
       const $ = (id) => host.querySelector("#" + id);
 
-      function drawTries() { $("gTries").innerHTML = Array.from({ length: L.tries }, (_, i) => '<span class="try' + (i < left ? " on" : "") + '"></span>').join(""); }
+      function drawTries() { $("gTries").innerHTML = Array.from({ length: left }, (_, i) => '<span class="try' + (i < left ? " on" : "") + '"></span>').join(""); }
       function finish(pts) { if (over) return; over = true; $("gInput").disabled = true; doneTimer = setTimeout(() => ctx.finish(pts), 1500); }
 
       $("gForm").addEventListener("submit", (e) => {
         e.preventDefault();
         if (over) return;
         const v = Number($("gInput").value);
-        if (!$("gInput").value || !Number.isInteger(v) || v < 1 || v > L.max) { $("gMsg").textContent = "Enter a whole number from 1 to " + L.max + "."; return; }
+        if (!$("gInput").value || !Number.isInteger(v) || v < 1 || v > levelMax) { $("gMsg").textContent = "Enter a whole number from 1 to " + levelMax + "."; return; }
         left--; drawTries();
         const li = document.createElement("li");
         if (v === secret) {
-          const pts = (left + 1) * 100;
+          const pts = (left + 1) * 100 + level * 50;
           li.innerHTML = "<b>" + v + "</b><span>🎉 Correct!</span>"; li.className = "ok";
-          $("gMsg").textContent = "You found it! +" + pts + " points";
+          $("gMsg").textContent = "Level " + level + " cleared! +" + pts + " points";
           $("gLog").prepend(li);
           finish(pts);
           return;

@@ -18,7 +18,10 @@
     controls: "Drag on the board or use ← → (and A D for player 2).",
     type: "versus", arcade: true, difficulty: true, players: { min: 1, max: 2, def: 1 }, rounds: { min: 1, max: 7, def: 3 },
     mount: function (host, ctx) {
-      const L = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const levelInfo = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100);
+      const level = levelInfo.level;
+      const L0 = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const L = { ...L0, ball: L0.ball * U.levelMeta(level, ctx.difficulty, 100).scale };
       const cpu = ctx.sides[1].isCpu;
       const hud = U.hud(host);
       const cv = U.canvas(host, W, H);
@@ -29,7 +32,7 @@
       let ball = { x: W / 2, y: H / 2, vx: 0, vy: 0 }, speed = L.ball, pause = 700, over = false, doneTimer = null, aim = 0, msg = "", held = {};
       let serveDir = ctx.first === 0 ? 1 : -1;       // +1 = towards bottom paddle (side 0)
 
-      const showHud = () => hud.set([[ctx.sides[0].name, score[0]], ["First to", WIN], [ctx.sides[1].name, score[1]]]);
+      const showHud = () => hud.set([[ctx.sides[0].name, score[0]], ["Level", level + "/100"], [ctx.sides[1].name, score[1]]]);
 
       function serve() {
         const a = (Math.random() * 0.8 - 0.4);

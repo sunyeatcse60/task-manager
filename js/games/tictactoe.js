@@ -62,6 +62,7 @@
     mount: function (host, ctx) {
       const marks = ["X", "O"];
       const board = Array(9).fill(null);
+      const level = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100).level;
       let turn = ctx.first, over = false, timer = null;
 
       host.innerHTML =
@@ -71,7 +72,7 @@
       const status = host.querySelector("#tttStatus");
       const cells = host.querySelectorAll(".ttt-cell");
 
-      function say() { status.innerHTML = '<b class="' + marks[turn].toLowerCase() + '">' + marks[turn] + "</b> " + esc(ctx.sides[turn].name) + (ctx.sides[turn].isCpu ? " is thinking…" : "'s turn"); }
+      function say() { status.innerHTML = '<b class="' + marks[turn].toLowerCase() + '">' + marks[turn] + "</b> " + esc(ctx.sides[turn].name) + (ctx.sides[turn].isCpu ? " is thinking…" : "'s turn") + ' · Level ' + level + '/100'; }
       function paint() { cells.forEach((c, i) => { c.textContent = board[i] || ""; c.className = "ttt-cell" + (board[i] ? " " + board[i].toLowerCase() : ""); }); }
 
       function finish(w) {

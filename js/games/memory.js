@@ -18,7 +18,10 @@
     controls: "Tap or click a card.",
     type: "solo", difficulty: true, players: { min: 1, max: 4, def: 1 }, rounds: { min: 1, max: 5, def: 2 },
     mount: function (host, ctx) {
-      const L = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const levelInfo = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100);
+      const level = levelInfo.level;
+      const L0 = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const L = { ...L0, pairs: Math.min(12, L0.pairs + Math.floor((level - 1) / 8)) };
       const hud = U.hud(host);
       const deck = U.shuffle(SYMBOLS.slice(0, L.pairs).concat(SYMBOLS.slice(0, L.pairs)));
       const board = document.createElement("div");
@@ -30,7 +33,7 @@
       host.appendChild(board);
 
       let first = null, lock = false, moves = 0, matched = 0, seconds = 0, timer = null, finished = false, doneTimer = null;
-      const showHud = () => hud.set([["Moves", moves], ["Time", seconds + "s"], ["Pairs", matched + "/" + L.pairs]]);
+      const showHud = () => hud.set([["Moves", moves], ["Level", level + "/100"], ["Pairs", matched + "/" + L.pairs]]);
 
       function score() {
         const bonus = Math.max(0, L.pairs * L.secPerPair - seconds) * 5;

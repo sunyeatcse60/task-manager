@@ -19,14 +19,17 @@
     controls: "Tap / click the board, Space or ↑ to flap.",
     type: "solo", arcade: true, difficulty: true, players: { min: 1, max: 4, def: 1 }, rounds: { min: 1, max: 5, def: 2 },
     mount: function (host, ctx) {
-      const L = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const levelInfo = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100);
+      const level = levelInfo.level;
+      const L0 = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const L = { ...L0, speed: L0.speed * U.levelMeta(level, ctx.difficulty, 100).scale };
       const hud = U.hud(host);
       const cv = U.canvas(host, W, H);
       const g = cv.ctx;
       let y = H / 2 - 40, vy = 0, pipes = [], passed = 0, started = false, alive = true, t = 0, ground = 0, ended = false, doneTimer = null;
 
-      const score = () => passed * 10;
-      const showHud = () => hud.set([["Score", score()], ["Pipes", passed], ["Best", Math.max(ctx.best, score())]]);
+      const score = () => passed * 10 + level * 25;
+      const showHud = () => hud.set([["Score", score()], ["Level", level + "/100"], ["Best", Math.max(ctx.best, score())]]);
       function addPipe(x) {
         const min = L.gap / 2 + 50, max = H - GROUND - L.gap / 2 - 50;
         pipes.push({ x: x, gapY: min + Math.random() * (max - min), passed: false });

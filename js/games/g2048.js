@@ -30,7 +30,9 @@
     controls: "Arrow keys / WASD, swipe on the board, or the arrow pad.",
     type: "solo", difficulty: true, players: { min: 1, max: 4, def: 1 }, rounds: { min: 1, max: 5, def: 2 },
     mount: function (host, ctx) {
-      const L = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const level = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100).level;
+      const L0 = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const L = { ...L0, n: Math.max(3, Math.min(4, L0.n + Math.floor((level - 1) / 12))) };
       const N = L.n;
       const hud = U.hud(host);
       const boardEl = document.createElement("div");
@@ -50,7 +52,7 @@
         fresh = p[0] + "," + p[1];
       }
       const maxTile = () => Math.max.apply(null, grid.map((r) => Math.max.apply(null, r)));
-      function showHud() { hud.set([["Score", score], ["Best tile", maxTile()], ["Moves", moves]]); }
+      function showHud() { hud.set([["Score", score], ["Level", level + "/100"], ["Moves", moves]]); }
 
       function render() {
         let html = "";

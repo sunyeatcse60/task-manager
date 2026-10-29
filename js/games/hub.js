@@ -22,6 +22,7 @@
   const find = (id) => list.filter((g) => g.id === id)[0];
   const range = (g) => g.players ? g.players.min + "–" + g.players.max : "";
   const grad = (g) => "--g1:" + g.tint[0] + ";--g2:" + g.tint[1];
+  const cover = (g) => '<img class="cover-art" src="assets/' + g.id + '.png" alt="' + esc(g.name) + '" loading="lazy" decoding="async">';
 
   /* ---------- 1. cards ---------- */
   function renderCards(host) {
@@ -34,7 +35,7 @@
       '<div class="game-grid">' + sorted.map((g) => {
         const best = bestOverall(g.id);
         return '<button type="button" class="game-card' + (g.featured ? " featured" : "") + '" data-id="' + g.id + '" style="' + grad(g) + '">' +
-          '<div class="art"><span class="emoji">' + g.emoji + "</span>" + (g.featured ? '<span class="ribbon">Featured</span>' : "") + "</div>" +
+          '<div class="art">' + cover(g) + (g.featured ? '<span class="ribbon">Featured</span>' : "") + "</div>" +
           '<div class="info"><h3>' + esc(g.name) + "</h3><p>" + esc(g.tag) + "</p>" +
           '<div class="meta"><span class="pill">' + (g.custom ? "Live scorer" : (g.players.max > 1 ? range(g) + " players" : "Solo")) + "</span>" +
           (best ? '<span class="pill best">★ ' + best + "</span>" : "") + "</div></div></button>";
@@ -63,7 +64,7 @@
     host.innerHTML =
       '<section class="page page-setup">' +
       '<button class="back-link" id="gBack" type="button">' + App.icon("left", 18) + "<span>All games</span></button>" +
-      '<div class="setup-hero" style="' + grad(game) + '"><div class="sh-emoji">' + game.emoji + "</div><div><h2>" + esc(game.name) + "</h2><p>" + esc(game.blurb) + "</p></div></div>" +
+      '<div class="setup-hero" style="' + grad(game) + '"><div class="sh-art">' + cover(game) + "</div><div><h2>" + esc(game.name) + "</h2><p>" + esc(game.blurb) + "</p></div></div>" +
       '<div class="setup-grid">' +
       '<div class="panel"><h4>How to play</h4><p>' + esc(game.how) + '</p><p class="controls">' + App.icon("gamepad", 16) + " <span>" + esc(game.controls) + "</span></p>" +
       '<div class="best-line" id="bestLine"></div></div>' +

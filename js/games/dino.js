@@ -19,7 +19,11 @@
     controls: "Tap / click the board, Space or ↑ to jump.",
     type: "solo", arcade: true, difficulty: true, players: { min: 1, max: 4, def: 1 }, rounds: { min: 1, max: 5, def: 2 },
     mount: function (host, ctx) {
-      const L = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const levelInfo = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100);
+      const level = levelInfo.level;
+      const L0 = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const levelScale = U.levelMeta(level, ctx.difficulty, 100).scale;
+      const L = { ...L0, v0: L0.v0 * levelScale, gap: Math.max(180, L0.gap / levelScale) };
       const hud = U.hud(host);
       const cv = U.canvas(host, W, H);
       const g = cv.ctx;
@@ -27,7 +31,7 @@
       const DW = 30, DH = 38;
 
       const score = () => Math.floor(dist / 10);
-      function showHud() { const s = score(); if (s !== lastShown) { lastShown = s; hud.set([["Distance", s], ["Speed", Math.round(speed * 100)], ["Best", Math.max(ctx.best, s)]]); } }
+      function showHud() { const s = score(); if (s !== lastShown) { lastShown = s; hud.set([["Distance", s], ["Level", level + "/100"], ["Best", Math.max(ctx.best, s)]]); } }
       function jump() { if (alive && y >= GROUND) vy = JUMP; }
       function finish() { if (ended) return; ended = true; ctx.finish(score()); }
       function die() { alive = false; doneTimer = setTimeout(finish, 800); }
@@ -43,7 +47,7 @@
       function update(dt) {
         scroll = (scroll + (alive ? speed : 0) * dt) % 40;
         if (!alive) { vy += GRAVITY * dt; y = Math.min(GROUND, y + vy * dt); return; }
-        speed = Math.min(0.78, speed + L.acc * dt);
+        speed = Math.min(0.78, speed + L.acc * dt * U.levelMeta(level, ctx.difficulty, 100).scale);
         dist += speed * dt;
         vy += GRAVITY * dt;
         y += vy * dt;

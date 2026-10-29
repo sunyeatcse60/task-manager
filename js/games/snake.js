@@ -19,7 +19,11 @@
     controls: "Arrow keys / WASD, swipe on the board, or the arrow pad.",
     type: "solo", arcade: true, difficulty: true, players: { min: 1, max: 4, def: 1 }, rounds: { min: 1, max: 5, def: 2 },
     mount: function (host, ctx) {
-      const L = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const levelInfo = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100);
+      const level = levelInfo.level;
+      const L0 = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const levelScale = U.levelMeta(level, ctx.difficulty, 100).scale;
+      const L = { ...L0, ms: Math.max(48, L0.ms / levelScale) };
       const hud = U.hud(host);
       const cv = U.canvas(host, COLS * CELL, ROWS * CELL);
       const g = cv.ctx;
@@ -31,7 +35,7 @@
         do { p = { x: U.rand(COLS), y: U.rand(ROWS) }; } while (snake.some((s) => s.x === p.x && s.y === p.y));
         food = p;
       }
-      function showHud() { hud.set([["Score", score], ["Length", snake.length], ["Best", Math.max(ctx.best, score)]]); }
+      function showHud() { hud.set([["Score", score], ["Level", level + "/100"], ["Best", Math.max(ctx.best, score)]]); }
       function turn(name) {
         const d = DIRS[name]; if (!d || !alive) return;
         const ref = queue.length ? queue[queue.length - 1] : dir;
@@ -53,7 +57,7 @@
         for (let i = 0; i < snake.length - 1; i++) if (snake[i].x === hx && snake[i].y === hy) { die(); return; }
         snake.unshift({ x: hx, y: hy });
         if (hx === food.x && hy === food.y) {
-          score += 10;
+          score += 10 + level * 2;
           if (L.speedup) ms = Math.max(48, ms - 2.5);
           placeFood();
           showHud();

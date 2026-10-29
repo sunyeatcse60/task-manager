@@ -8,6 +8,24 @@
   U.shuffle = App.shuffle;
   U.clamp = App.clamp;
 
+  U.levelMeta = function (level, difficulty, maxLevel) {
+    const max = Number(maxLevel) || 100;
+    const safe = Math.max(1, Math.min(max, Number(level) || 1));
+    const t = (safe - 1) / (max - 1);
+    const bias = difficulty === "hard" ? 1.28 : difficulty === "easy" ? 0.82 : 1;
+    const scale = 1 + t * (difficulty === "hard" ? 1.8 : 1.4);
+    return { level: safe, t: t, bias: bias, scale: scale, maxLevel: max };
+  };
+
+  U.levelForRound = function (round, totalRounds, difficulty, maxLevel) {
+    const max = Number(maxLevel) || 100;
+    const rounds = Math.max(1, Number(totalRounds) || 1);
+    const safeRound = Math.max(1, Number(round) || 1);
+    const t = (safeRound - 1) / Math.max(1, rounds - 1);
+    const level = Math.max(1, Math.min(max, Math.round(1 + t * (max - 1))));
+    return { ...U.levelMeta(level, difficulty, max), round: safeRound, totalRounds: rounds, t: t };
+  };
+
   /* canvas that keeps a fixed logical size (W x H) and scales with the screen */
   U.canvas = function (host, W, H) {
     const wrap = document.createElement("div");

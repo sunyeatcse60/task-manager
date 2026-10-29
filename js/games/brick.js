@@ -19,7 +19,9 @@
     controls: "Drag on the board or use ← →. Tap / Space to launch.",
     type: "solo", arcade: true, difficulty: true, players: { min: 1, max: 4, def: 1 }, rounds: { min: 1, max: 5, def: 2 },
     mount: function (host, ctx) {
-      const L = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const level = U.levelForRound(ctx.round, ctx.rounds, ctx.difficulty, 100).level;
+      const L0 = LEVELS[ctx.difficulty] || LEVELS.medium;
+      const L = { ...L0, rows: L0.rows + Math.min(6, Math.floor((level - 1) / 6)) };
       const hud = U.hud(host);
       const cv = U.canvas(host, W, H);
       const g = cv.ctx;
@@ -30,7 +32,7 @@
       let ball = { x: W / 2, y: H - 40, vx: 0, vy: 0 };
       const py = H - 26;
 
-      const showHud = () => hud.set([["Score", score], ["Lives", "❤".repeat(Math.max(0, lives))], ["Best", Math.max(ctx.best, score)]]);
+      const showHud = () => hud.set([["Score", score], ["Level", level + "/100"], ["Best", Math.max(ctx.best, score)]]);
       function reset() { launched = false; speed = L.speed; ball = { x: px, y: py - BR - 1, vx: 0, vy: 0 }; }
       function launch() {
         if (launched || ended) return;
@@ -74,7 +76,7 @@
             break;
           }
         }
-        if (alive === 0) { score += lives * 50; showHud(); finish(score); return; }
+        if (alive === 0) { score += lives * 50 + level * 20; showHud(); finish(score); return; }
         if (ball.y > H + 10) {
           lives--; showHud();
           if (lives <= 0) { finish(score); return; }
