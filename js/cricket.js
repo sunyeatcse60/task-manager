@@ -183,18 +183,23 @@
     const hist = history();
     host.innerHTML =
       '<section class="page wide page-cricket">' +
+      '<div class="cr-home">' +
       '<button class="back-link" id="crBack" type="button">' + App.icon("left", 18) + "<span>All games</span></button>" +
-      '<div class="setup-hero" style="--g1:#86efac;--g2:#15803d"><div class="sh-emoji">🏏</div><div><h2>Cricket Scorer</h2><p>Score a match ball by ball with live score, scorecard and commentary, just like a live cricket app.</p></div></div>' +
+      '<div class="cr-panel cr-hero" style="--g1:#98e7b1;--g2:#2ca66a">' +
+      '<div class="cr-hero-icon">🏏</div>' +
+      '<div class="cr-hero-copy"><h2>Cricket Scorer</h2><p>Score a match ball by ball with live score, scorecard and commentary, just like a live cricket app.</p></div>' +
+      '</div>' +
       (live
-        ? '<div class="panel live-card"><div class="lc-head"><span class="live-dot"></span><b>Match in progress</b></div><h4>' + esc(live.teams[0].name) + " vs " + esc(live.teams[1].name) + "</h4><p class=\"muted\">" + scoreLine(live) + " · " + live.overs + " overs</p>" +
+        ? '<div class="cr-panel live-card"><div class="lc-head"><span class="live-dot"></span><b>Match in progress</b></div><h4>' + esc(live.teams[0].name) + " vs " + esc(live.teams[1].name) + "</h4><p class=\"muted\">" + scoreLine(live) + " · " + live.overs + " overs</p>" +
           '<div class="actions"><button class="btn primary grow" id="crResume" type="button">' + App.icon("play", 18) + "<span>Resume scoring</span></button><button class=\"btn ghost danger grow\" id=\"crDiscard\" type=\"button\">Discard</button></div></div>"
-        : '<div class="panel center-panel"><h4>Start a new match</h4><p class="muted">Set the teams, overs and toss, then start scoring.</p><button class="btn primary" id="crNew" type="button">' + App.icon("plus", 18) + "<span>New match</span></button></div>") +
+        : '<div class="cr-panel cr-start-panel"><h4>Start a new match</h4><p>Set the teams, overs and toss, then start scoring.</p><button class="btn primary cr-new-btn" id="crNew" type="button">' + App.icon("plus", 18) + "<span>New match</span></button></div>") +
       (live ? '<div class="center-btn"><button class="btn ghost" id="crNew2" type="button">Start a different match</button></div>' : "") +
-      '<div class="section-title">Recent matches</div>' +
+      '<div class="cr-history-head">Recent matches</div>' +
       (hist.length ? '<div class="hist-list">' + hist.map((h) =>
         '<div class="hist-card" data-id="' + h.id + '"><button class="hist-main" type="button"><div class="hc-top"><b>' + esc(h.teams[0].name) + " vs " + esc(h.teams[1].name) + "</b><small>" + dateStr(h.created) + "</small></div>" +
         '<div class="hc-score">' + scoreLine(h) + '</div><div class="hc-result">' + esc(h.result) + '</div></button><button class="mini del" type="button" aria-label="Delete match">' + App.icon("trash", 17) + "</button></div>"
       ).join("") + "</div>" : '<div class="state-card plain">' + App.icon("trophy", 36) + "<p>No finished matches yet.</p></div>") +
+      '</div>' +
       "</section>";
 
     $(host, "#crBack").addEventListener("click", () => App.go("games"));

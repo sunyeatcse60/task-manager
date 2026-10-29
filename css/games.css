@@ -98,6 +98,18 @@
 .t2048.v2{background:#eee4da}.t2048.v4{background:#ede0c8}.t2048.v8{background:#f2b179;color:#fff}.t2048.v16{background:#f59563;color:#fff}.t2048.v32{background:#f67c5f;color:#fff}.t2048.v64{background:#f65e3b;color:#fff}.t2048.v128{background:#edcf72;color:#fff;font-size:.85em}.t2048.v256{background:#edcc61;color:#fff}.t2048.v512{background:#edc850;color:#fff}.t2048.v1024{background:#edc53f;color:#fff;font-size:.7em}.t2048.v2048{background:#edc22e;color:#fff;font-size:.7em}.t2048.vbig{background:#3c3a32;color:#fff;font-size:.6em}
 
 /* ===== cricket ===== */
+.page-cricket{max-width:440px;margin:0 auto}
+.cr-home{display:flex;flex-direction:column;gap:16px}
+.cr-panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-s)}
+.cr-hero{display:flex;align-items:center;gap:16px;padding:18px 16px;background:linear-gradient(135deg,var(--g1),var(--g2));border:0;color:#fff;box-shadow:none}
+.cr-hero-icon{width:58px;height:58px;border-radius:16px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:32px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.cr-hero-copy{flex:1;min-width:0}
+.cr-hero h2{font-size:27px;line-height:1.2;font-weight:800;margin:0 0 4px;letter-spacing:-.4px}
+.cr-hero p{font-size:13px;line-height:1.45;opacity:.96}
+.cr-start-panel{padding:18px 16px 16px;text-align:center}
+.cr-start-panel h4{font-size:16px;font-weight:800;margin-bottom:8px}
+.cr-start-panel p{font-size:13.5px;color:var(--muted);margin-bottom:12px}
+.cr-new-btn{display:inline-flex;width:auto;padding-left:22px;padding-right:22px}
 .live-card .lc-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .live-dot{width:10px;height:10px;border-radius:50%;background:var(--red);animation:blink 1.2s infinite}
 @keyframes blink{50%{opacity:.25}}
@@ -106,6 +118,7 @@
 .hist-main{flex:1;text-align:left;padding:12px 14px;min-width:0}
 .hc-top{display:flex;justify-content:space-between;gap:8px}.hc-top small{color:var(--muted)}
 .hc-score{color:var(--muted);font-size:13px;margin:3px 0}.hc-result{font-weight:800;color:var(--green-dd);font-size:14px}
+.cr-history-head{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;padding:2px 4px}
 .cr-card{background:linear-gradient(135deg,#0f766e,#15803d);color:#fff;border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 .cr-top{display:flex;justify-content:space-between;align-items:center;font-weight:700}
 .cr-status{font-size:12px;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:99px}
